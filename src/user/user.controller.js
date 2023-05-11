@@ -57,7 +57,7 @@ exports.register = async(req,res)=>{
     }
     let validate = validateData(params);
     if(validate) return res.status(400).send(validate);
-    data.role = 'EMPLOYEE'
+    data.role = 'CLIENT'
     data.password = await encrypt(data.password)
 
     let user = new User(data);
