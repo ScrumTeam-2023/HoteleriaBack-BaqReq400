@@ -19,14 +19,14 @@ exports.defaultAdmin = async()=>{
         }
 
 
-        let params = {
+        let params = {      
             password: data.password,
         }
 
         let validate = validateData(params)
         if(validate) return res.status(400).send(validate)
 
-        let ExistUser = await User.findOne({name: 'Kevin Vaso'})
+        let ExistUser = await User.findOne({username: 'admin'})
         if(ExistUser) return console.log('Admin already Engaged')
         data.password = await encrypt(data.password)
         let defaultRich = new User(data)
