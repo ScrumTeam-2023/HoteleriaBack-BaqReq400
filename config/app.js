@@ -19,6 +19,8 @@ const userRoutes = require('../src/user/user.routes')
 const servicesRoutes = require('../src/roomServices/rs.routes')
 
 //server Config
+const hotelRoutes = require('../src/hotel/hotel.routes');
+
 app.use(express.urlencoded({extended: false}));
 app.use(express.json())
 app.use(cors());
@@ -30,6 +32,9 @@ app.use(morgan('dev'))
 app.use('/event',eventRoutes);
 app.use('/user',userRoutes);
 app.use('/services',servicesRoutes);
+app.use('/hotel',hotelRoutes)
+//const NombreRoutes = require('Ruta')
+
 //Server
 exports.initServer = ()=>{
     app.listen(port);
