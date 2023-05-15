@@ -1,6 +1,7 @@
 'use strict'
 const Event = require('./event.model');
 
+
 exports.test = (req, res)=>{
     res.send({message: 'Test function is running Event'})
 }
@@ -8,14 +9,20 @@ exports.test = (req, res)=>{
 exports.createEvent = async(req, res)=>{
     try {
         let data = req.body;
+        // Validar duplicados
+        let existEvent = await Event.findOne({ name: data.name, hotelId: data.hotelId });
+        if(existEvent){
+            return res.status(409).send({message: 'Event already exists for this hotel'});
+        }
         let event = new Event(data);
         await event.save();
-        return res.send ({message: 'Event saved succesfully'});
+        return res.send ({message: 'Event saved successfully'});
     } catch (err) {
         console.log(err)
         return res.status(500).send({message: 'Error saving event !!!'})
     }
 }
+
 
 exports.getEvents = async(req, res)=>{
     try {

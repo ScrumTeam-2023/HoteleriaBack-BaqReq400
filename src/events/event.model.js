@@ -29,7 +29,13 @@ const eventSchema = mongoose.Schema({
     endTime:{
         type: String,
         required: true
-    }
+    },
+    hotel: [{
+       type: mongoose.Schema.Types.ObjectId,
+       ref: 'Hotel',
+       required: true
+    }]
+
     
 },{ 
     versionKey: false
