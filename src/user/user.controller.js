@@ -104,82 +104,85 @@ exports.login = async(req, res)=>{
 
 exports.update = async(req,res)=>{
     try {
-        //Usuario Con permisos
         let userId = req.params.id;
-        //datos a actualizar
-        let data = req.body;
-        //Usuario con Permisos
-        if(userId != req.user.sub) return res.status(401).send({message: 'Dont have permission to do this action'});
-        if(data.password || Object.entries(data).length === 0 || data.role)return res.status(400).send({message: 'Somethings cannot be updated (Check the manual for the Instructions!)'});
-            let userUpdated = await User.findOneAndUpdate(
-                {_id: req.user},
-                data,
-                {new: true}
-
-            )
-            if(!userUpdated) return res.status(404).send({message: 'User not found Nor Updated ヅ'})
+        let token = req.user.sub;
+        let data = req.body
+       
+        if(data.password || Object.entries(data).length === 0 || data.role) return res.status(400).send({message: 'Have submitted some data that cannot be updated'});
+        let userUpdated = await User.findOneAndUpdate(
+            {_id: token},
+            data,
+            {new: true} 
+        )
+        if(!userUpdated) return res.status(404).send({message: 'User not found and not updated'});
+        return res.send({message: 'User updated', userUpdated})
     } catch (err) {
         console.error(err)
-        return res.status(500).send({message: 'CRITICAL HIT! at "update"', err: `Username ${err.keyValue.username} its already taken!`})
-        
+        return res.status(500).send({ message: "Error al editar la cuenta" })
     }
     
 }
 
-exports.delete = async(req, res)=>{
-    try{
+exports.delete = async(req,res)=>{
+    try {
+        let idUser = req.params.id;
 
-        let userId = req.params.id;
-
-        if( userId != req.user.sub) return res.status(401).send({message: 'Dont have permission to do this action'});
-        //Eliminar
-        if(data.role === 'ADMIN' || data.role === 'admin'){
-            return res.status(401).send({message: 'YOU CANNOT DELETE YOURSELF AS AN ADMIN!'})
-        }
-
-        let userDeleted = await User.findOneAndDelete({_id: req.user.sub});
-        if(!userDeleted) return res.send({message: 'Account not found and not deleted'});
-        return res.send({message: `Account with username ${userDeleted.username} deleted sucessfully`});
-    }catch(err){
-        console.error(err);
-        return res.status(500).send({message: 'Error not deleted'});
+        let defaultAdmin = await User.findOne({username: 'admin'});
+        if(defaultAdmin._id == idUser) return res.send({message: 'admin cannot be deleted'});
+       
+        let userDeleted = await User.findOneAndDelete({_id: idUser});
+        if(!userDeleted) return res,send({message: 'Account not found nor deleted'})
+        
+        return res.send({message: 'User deleted sucessfully'});
+    } catch (err) {
+        console.error(err)
+        return res.status(500).send({message: 'CRITICAL HIT! at "Deleting"'})
+        
     }
+    
 }
 
 
 //SAVE AS ADMIN
-exports.save = async(req, res)=>{
+exports.save = async (req, res) => {
     try {
+      let data = req.body;
 
-        let data = req.body;
-      
+      let existUser = await User.findOne({ name: data.name });
+      if (existUser) {
+        return res.send({ msg: 'This user already had this name' });
+      }
 
-        let existUser = await User.findOne({name: data.name});
-        if(existUser){
-            return res.send({msg: 'This user already had this name'})
-        }
+      let params = {
+        password: data.password,
+      };
+      let validate = validateData(params);
+      if (validate) return res.status(400).send(validate);
+      data.password = await encrypt(data.password);
 
-        let params = {
-            password: data.password
-        }
-        let validate = validateData(params);
-        if(validate) return res.status(400).send(validate);
-        data.password = await encrypt(data.password)
-    
-        let user = new User(data);
-        if(data.role === 'ADMIN' || data.role === 'admin'){
-            return res.status(401).send({message: 'CRITICAL HIT! Error with Saving user or You are trying to save an user As ADMIN'})
-        }
-        await user.save();
-        return res.send({message: 'Account created succesfully'})
-        
-        
-       } catch (err) {
-        console.error(err)
-        return res.status(500).send({message: 'CRITICAL HIT! at "Saving Worker"'})
-        
-       }
-}
+      if (data.role !== 'MANAGER' && data.role !== 'manager') {
+        return res
+          .status(401)
+          .send({ message: 'You are not authorized to save this user' });
+      }
+
+      if(data.role === 'ADMIN' || data.role === 'admin'){
+          
+        return res.status(401).send({message: 'CRITICAL HIT! Dont save ADMINS >:C'})
+    }
+
+
+
+      let user = new User(data);
+      await user.save();
+      return res.send({ message: 'Account created succesfully' });
+    } catch (err) {
+      console.error(err);
+      return res
+        .status(500)
+        .send({ message: 'CRITICAL HIT! at "Saving Worker"' });
+    }
+  };
 
 
 
@@ -203,9 +206,9 @@ exports.getUser = async(req,res)=>{
 exports.getTheUser = async(req,res)=>{
     try {
         let userId = req.params.id;
-        let user = await User.findOne({_id: userId}).populate();
-        if(!user) return res.status(404).send({message: 'User not Found'})
-        return res.send({message: 'user found!',user})
+        let user = await User.findOne({_id: userId})
+        if(!user) return res.status(404).send({message: 'User Not Found'})
+        return res.status(200).send({user})
     } catch (err) {
         console.error(err);
         return res.status(500).send({message: 'CRITICAL HIT! at "Getting ONE user"'});
