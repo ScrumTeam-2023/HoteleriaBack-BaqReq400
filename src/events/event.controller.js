@@ -34,6 +34,20 @@ exports.getEvents = async(req, res)=>{
     }
 }
 
+exports.getEventBy = async(req, res)=>{
+    try {
+        let eventId = req.params.id;
+        let event = await Event.findOne({_id: eventId})
+        if(!event){
+            return res.status(400).send({message: 'Event not found'})
+        }
+        return res.send({message: 'Event found: ', event});
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send({message: 'Error getting events !!!'})
+    }
+}
+
 exports.updateEvent = async(req, res)=>{
     try {
         let data = req.body;
