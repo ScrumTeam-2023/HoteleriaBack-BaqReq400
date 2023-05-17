@@ -13,6 +13,19 @@ exports.getServices = async (req, res)=>{
     }
 };
 
+//Obtener todos los Servicios por ID
+exports.getServiceBy = async(req, res)=>{
+    try{
+        let serviceId = req.params.id;
+        let service = await Service.findById({_id: serviceId})
+        if(!service) return res.status(418).send({message: 'Service not found'});
+        return res.send(service)
+    }catch(err){
+        console.error(err);
+        return res.status(500).send({message: 'Error getting Service for ID'});
+    }
+}
+
 // Create service
 exports.createService = async (req, res)=>{
     try{
@@ -68,5 +81,18 @@ exports.updateService = async (req, res) =>{
     }
 };
 
+//-------------EliminarServicio---------------------------
 
-
+    exports.deleteService = async(req, res)=>{
+        try{
+            //Capturar el ID del Servicio
+            let serviceId = req.params.id;
+            //Eliminarlo
+            let deleteService = await Service.deleteOne({_id: serviceId})
+            if(deleteService.deleteCount === 0)return res.status(404).send({message: 'Service not found, not deleted'});
+            return res.send({message: 'Service deleted'})
+        }catch(err){
+            console.error(err);
+            return res.status(500).send({message: 'Error deleting hotel'});
+        }
+    }

@@ -30,11 +30,11 @@ const eventSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    hotel: [{
+    hotel: {
        type: mongoose.Schema.Types.ObjectId,
        ref: 'Hotel',
        required: true
-    }]
+    }
 
     
 },{ 
