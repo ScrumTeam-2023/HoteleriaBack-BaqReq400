@@ -1,7 +1,7 @@
 'use strict'
 const Reservation = require('./reserve.model');
 const User = require('../user/user.model');
-const Room = require('../rooms/habitacion.model');
+const Room = require('../rooms/room.model');
 const RoomServices = require('../roomServices/rs.model');
 
 

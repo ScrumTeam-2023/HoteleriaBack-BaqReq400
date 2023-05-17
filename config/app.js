@@ -13,7 +13,7 @@ const eventRoutes = require ('../src/events/event.routes');
 const userRoutes = require('../src/user/user.routes')
 const servicesRoutes = require('../src/roomServices/rs.routes')
 const hotelRoutes = require('../src/hotel/hotel.routes');
-const roomRoutes = require('../src/rooms/habitacion.routes')
+const roomRoutes = require('../src/rooms/room.routes')
 const reservationRoutes = require('../src/reservation/reserve.routes')
 
 app.use(express.urlencoded({extended: false}));
