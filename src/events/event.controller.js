@@ -8,19 +8,39 @@ exports.test = (req, res)=>{
 exports.createEvent = async(req, res)=>{
     try {
         let data = req.body;
+        // Validar duplicados
+        let existEvent = await Event.findOne({ name: data.name, hotelId: data.hotelId });
+        if(existEvent){
+            return res.status(409).send({message: 'Event already exists for this hotel'});
+        }
         let event = new Event(data);
         await event.save();
-        return res.send ({message: 'Event saved succesfully'});
+        return res.send ({message: 'Event saved successfully'});
     } catch (err) {
         console.log(err)
         return res.status(500).send({message: 'Error saving event !!!'})
     }
 }
 
+
 exports.getEvents = async(req, res)=>{
     try {
         let event = await Event.find()
         return res.send({event});
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send({message: 'Error getting events !!!'})
+    }
+}
+
+exports.getEventBy = async(req, res)=>{
+    try {
+        let eventId = req.params.id;
+        let event = await Event.findOne({_id: eventId})
+        if(!event){
+            return res.status(400).send({message: 'Event not found'})
+        }
+        return res.send({message: 'Event found: ', event});
     } catch (err) {
         console.log(err)
         return res.status(500).send({message: 'Error getting events !!!'})
