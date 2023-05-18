@@ -26,7 +26,7 @@ exports.createEvent = async(req, res)=>{
 
 exports.getEvents = async(req, res)=>{
     try {
-        let event = await Event.find()
+        let event = await Event.find().populate()
         return res.send({event});
     } catch (err) {
         console.log(err)
@@ -37,7 +37,7 @@ exports.getEvents = async(req, res)=>{
 exports.getEventBy = async(req, res)=>{
     try {
         let eventId = req.params.id;
-        let event = await Event.findOne({_id: eventId})
+        let event = await Event.findOne({_id: eventId}).populate()
         if(!event){
             return res.status(400).send({message: 'Event not found'})
         }

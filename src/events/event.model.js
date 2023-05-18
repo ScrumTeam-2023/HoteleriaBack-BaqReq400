@@ -1,4 +1,5 @@
 'use strict'
+const moment = require('moment')
 const mongoose = require('mongoose')
 
 const eventSchema = mongoose.Schema({
@@ -20,7 +21,10 @@ const eventSchema = mongoose.Schema({
     },
     date:{
         type: Date,
-        required: true
+        required: true,
+        get: function (value) {
+            return moment(value).format('dd, MMMM, Do YYYY');
+        }
     },
     startTime:{
         type: String,

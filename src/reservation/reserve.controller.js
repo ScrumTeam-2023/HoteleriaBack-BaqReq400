@@ -35,7 +35,7 @@ exports.createReservation = async(req, res)=>{
 
 exports.getReservas = async(req, res)=>{
     try {
-        let reserva = await Reservation.find().populate('users','room','roomServices');
+        let reserva = await Reservation.find().populate();
         return res.send({message: 'Reservatios found: ', reserva})
     } catch (err) {
         console.log(err)
@@ -61,22 +61,11 @@ exports.updateReserva = async(req, res)=>{
     try {
         let reservaId = req.params.id;
         let data = req.body
-        let existUser = await User.findOne({_id: data.user});
-        let existRoom = await Room.findOne({_id: data.room});
-        let existRoomServices = await RoomServices.findOne({_id: data.roomServices});
         let params= {
             endDate: data.endDate,
-            startDate: data.startDate
+            startDate: data.startDate,
+            roomServices: data.roomServices
                      
-        }
-        if(!existUser){
-            return res.status(404).send({message: 'User not found'})
-        }
-        if(!existRoom){
-            return res.status(404).send({message: 'Room not found'})
-        }
-        if(!existRoomServices){
-            return res.status(404).send({message: 'Service not found'})
         }
         let updateReserva = await Reservation.findByIdAndUpdate(
             {_id: reservaId},
@@ -113,4 +102,5 @@ exports.deleteReserva = async(req, res)=>{
         return res.status(500).send({message: 'Error deleting reservation'})
     }
 }
+
 

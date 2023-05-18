@@ -23,7 +23,7 @@ const reservationSchema = mongoose.Schema({
     },
     room:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Habitacion',
+        ref: 'Room',
         required: true
     },
     roomServices: [{
